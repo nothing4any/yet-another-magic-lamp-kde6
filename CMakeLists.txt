@@ -16,23 +16,16 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIR}/cmake/Modules
 )
 
-find_package(Qt6 REQUIRED COMPONENTS
-    Core
-    DBus
-    Gui
-)
-
 include(FeatureSummary)
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 
-if(NOT KDE_INSTALL_PLUGINDIR)
-    set(KDE_INSTALL_PLUGINDIR "${CMAKE_INSTALL_PREFIX}/lib/qt6/plugins")
-endif()
-if(NOT PLUGIN_INSTALL_DIR)
-    set(PLUGIN_INSTALL_DIR "${KDE_INSTALL_PLUGINDIR}")
-endif()
+find_package(Qt6 REQUIRED COMPONENTS
+    Core
+    DBus
+    Gui
+)
 
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
     Config
@@ -48,6 +41,15 @@ find_package(KF6KCMUtils REQUIRED)
 find_package(KWinDBusInterface CONFIG REQUIRED)
 
 find_package(epoxy REQUIRED)
+
+# Determine plugin install directory. KDEInstallDirs may leave it empty
+# when the install prefix matches Qt's prefix.
+if("${KDE_INSTALL_PLUGINDIR}" STREQUAL "")
+    get_target_property(QT_PLUGINS_DIR Qt6::Core INTERFACE_QT_PLUGINS_DIR)
+    set(PLUGIN_INSTALL_DIR "${QT_PLUGINS_DIR}")
+else()
+    set(PLUGIN_INSTALL_DIR "${KDE_INSTALL_PLUGINDIR}")
+endif()
 
 add_subdirectory(src)
 

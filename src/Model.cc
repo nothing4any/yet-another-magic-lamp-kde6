@@ -74,7 +74,7 @@ static Direction realizeDirection(const KWin::EffectWindow* window)
 
         KWin::LogicalOutput* screen = KWin::effects->screenAt(iconRect.center().toPoint());
 
-        const QRectF screenRect = KWin::effects->clientArea(KWin::PlacementArea, screen, nullptr);
+        const QRectF screenRect = KWin::effects->clientArea(KWin::PlacementArea, screen);
         const QRectF constrainedRect = screenRect.intersected(iconRect);
 
         if (qFuzzyIsNull(constrainedRect.left() - screenRect.left()))
@@ -172,7 +172,7 @@ void Model::start(AnimationKind kind)
     case AnimationKind::Unminimize:
         m_stage = AnimationStage::Squash;
         m_timeLine.reset();
-        m_timeLine.setDirection(KWin::TimeLine::Backward);
+        m_timeLine.setDirection(KWin::TimeLine::Forward);
         m_timeLine.setDuration(m_parameters.squashDuration);
         m_timeLine.setEasingCurve(QEasingCurve::Linear);
         m_clip = true;
@@ -183,13 +183,17 @@ void Model::start(AnimationKind kind)
     }
 }
 
-void Model::advance(std::chrono::milliseconds presentTime)
+void Model::advance(const KWin::RenderView* view)
 {
     if (m_window->iconGeometry() != m_lastIconGeometry) {
         updateParameters();
     }
 
-    m_timeLine.advance(presentTime);
+    const auto delta = m_clock.tick(view);
+    if (delta.count() > 0) {
+        m_timeLine.setElapsed(m_timeLine.elapsed() + delta);
+    }
+
     if (!m_timeLine.done()) {
         return;
     }
@@ -256,7 +260,7 @@ void Model::updateUnminimizeStage()
         }
         m_stage = AnimationStage::Bump;
         m_timeLine.reset();
-        m_timeLine.setDirection(KWin::TimeLine::Backward);
+        m_timeLine.setDirection(KWin::TimeLine::Forward);
         m_timeLine.setDuration(m_parameters.bumpDuration);
         m_timeLine.setEasingCurve(QEasingCurve::Linear);
         m_clip = false;
@@ -270,7 +274,7 @@ void Model::updateUnminimizeStage()
     case AnimationStage::Squash:
         m_stage = AnimationStage::Stretch2;
         m_timeLine.reset();
-        m_timeLine.setDirection(KWin::TimeLine::Backward);
+        m_timeLine.setDirection(KWin::TimeLine::Forward);
         m_timeLine.setDuration(
             durationFraction(m_parameters.stretchDuration, m_shapeFactor));
         m_timeLine.setEasingCurve(QEasingCurve::Linear);
@@ -522,6 +526,15 @@ void Model::apply(QVector<KWin::WindowQuad>& quads) const
     }
 }
 
+qreal Model::animationValue() const
+{
+    const qreal v = m_timeLine.value();
+    if (m_kind == AnimationKind::Unminimize) {
+        return 1.0 - v;
+    }
+    return v;
+}
+
 void Model::applyBump(QVector<KWin::WindowQuad>& quads) const
 {
     TransformParameters params;
@@ -529,7 +542,7 @@ void Model::applyBump(QVector<KWin::WindowQuad>& quads) const
     params.direction = m_direction;
     params.squashProgress = 0.0;
     params.stretchProgress = 0.0;
-    params.bumpProgress = m_timeLine.value();
+    params.bumpProgress = animationValue();
     params.bumpDistance = m_bumpDistance;
     transformQuads(m_window, params, quads);
 }
@@ -540,7 +553,7 @@ void Model::applyStretch1(QVector<KWin::WindowQuad>& quads) const
     params.shapeCurve = m_parameters.shapeCurve;
     params.direction = m_direction;
     params.squashProgress = 0.0;
-    params.stretchProgress = m_shapeFactor * m_timeLine.value();
+    params.stretchProgress = m_shapeFactor * animationValue();
     params.bumpProgress = 1.0;
     params.bumpDistance = m_bumpDistance;
     transformQuads(m_window, params, quads);
@@ -552,7 +565,7 @@ void Model::applyStretch2(QVector<KWin::WindowQuad>& quads) const
     params.shapeCurve = m_parameters.shapeCurve;
     params.direction = m_direction;
     params.squashProgress = 0.0;
-    params.stretchProgress = m_shapeFactor * m_timeLine.value();
+    params.stretchProgress = m_shapeFactor * animationValue();
     params.bumpProgress = params.stretchProgress;
     params.bumpDistance = m_bumpDistance;
     transformQuads(m_window, params, quads);
@@ -563,7 +576,7 @@ void Model::applySquash(QVector<KWin::WindowQuad>& quads) const
     TransformParameters params;
     params.shapeCurve = m_parameters.shapeCurve;
     params.direction = m_direction;
-    params.squashProgress = m_timeLine.value();
+    params.squashProgress = animationValue();
     params.stretchProgress = qMin(m_shapeFactor + params.squashProgress, 1.0);
     params.bumpProgress = 1.0;
     params.bumpDistance = m_bumpDistance;

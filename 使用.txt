@@ -1,0 +1,35 @@
+在 Manjaro (Arch-based) 上编译和安装：
+
+安装依赖
+
+sudo pacman -S cmake extra-cmake-modules kwin kconfig kconfigwidgets \
+    kcoreaddons kwindowsystem qt6-base libepoxy
+Arch/Manjaro 不拆分 dev 包，kwin 本身就包含了 libkwineffects、kwinglutils 以及 KWinDBusInterface 的 CMake 配置。
+
+编译安装
+cd kwin-effects-yet-another-magic-lamp-master
+mkdir build && cd build
+cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr
+
+make && make install
+
+rm -rf /usr/lib/qt6/plugins/kwin/effects
+mv /kwin/effects /usr/lib/qt6/plugins/kwin/effects
+
+启用效果
+去 系统设置 → 桌面行为 → 桌面特效，找到 "Yet Another Magic Lamp"，勾选后点应用即可。它会替代系统默认的最小化动画（同属 minimize 互斥组）。
+
+如果 cmake 找不到 kwineffects
+Manjaro 上 kwin 包的 CMake 配置文件通常在 /usr/lib/cmake/ 下。如果 find_package(kwineffects) 失败，检查一下：
+
+
+ls /usr/lib/cmake/kwineffects*/
+如果有这个目录但 cmake 找不到，可能是路径问题，加一个参数：
+
+
+cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_PREFIX_PATH=/usr/lib/cmake

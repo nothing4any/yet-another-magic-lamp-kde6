@@ -70,7 +70,9 @@ public:
     /**
      * Updates the model to @p milliseconds.
      **/
-    void advance(std::chrono::milliseconds presentTime);
+    void advance(const KWin::RenderView* view);
+
+    KWin::AnimationClock m_clock;
 
     /**
      * Returns whether the animation is complete.
@@ -124,6 +126,8 @@ public:
     QRegion clipRegion() const;
 
 private:
+    qreal animationValue() const;
+
     void applyBump(QVector<KWin::WindowQuad>& quads) const;
     void applyStretch1(QVector<KWin::WindowQuad>& quads) const;
     void applyStretch2(QVector<KWin::WindowQuad>& quads) const;
