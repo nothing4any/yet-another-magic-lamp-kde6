@@ -14,7 +14,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="label_Duration">
      <property name="text">
-      <string>Duration:</string>
+      <string>动画时长:</string>
      </property>
     </widget>
    </item>
@@ -27,10 +27,10 @@
       </sizepolicy>
      </property>
      <property name="specialValueText">
-      <string>Default</string>
+      <string>默认</string>
      </property>
      <property name="suffix">
-      <string> milliseconds</string>
+      <string> 毫秒</string>
      </property>
      <property name="maximum">
       <number>9999</number>
@@ -43,7 +43,7 @@
    <item row="1" column="0">
     <widget class="QLabel" name="label_GridResolution">
      <property name="text">
-      <string>Grid resolution:</string>
+      <string>网格分辨率:</string>
      </property>
     </widget>
    </item>
@@ -55,12 +55,24 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="minimum">
+      <number>5</number>
+     </property>
+     <property name="maximum">
+      <number>120</number>
+     </property>
+     <property name="singleStep">
+      <number>5</number>
+     </property>
+     <property name="suffix">
+      <string> 段</string>
+     </property>
     </widget>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="label_MaxBumpDistance">
      <property name="text">
-      <string>Max bump distance:</string>
+      <string>最大隆起距离:</string>
      </property>
     </widget>
    </item>
@@ -77,7 +89,7 @@
    <item row="3" column="0">
     <widget class="QLabel" name="label_InitialShapeFactor">
      <property name="text">
-      <string>Initial shape factor:</string>
+      <string>初始形变系数:</string>
      </property>
     </widget>
    </item>
@@ -100,7 +112,7 @@
    <item row="4" column="0">
     <widget class="QLabel" name="label_ShapeCurve">
      <property name="text">
-      <string>Shape curve:</string>
+      <string>形变曲线:</string>
      </property>
     </widget>
    </item>
@@ -114,47 +126,47 @@
      </property>
      <item>
       <property name="text">
-       <string>Linear</string>
+       <string>线性</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Quad</string>
+       <string>二次</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Cubic</string>
+       <string>三次</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Quart</string>
+       <string>四次</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Quint</string>
+       <string>五次</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Sine</string>
+       <string>正弦</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Circ</string>
+       <string>圆弧</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Bounce</string>
+       <string>弹跳</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Bezier</string>
+       <string>贝塞尔</string>
       </property>
      </item>
     </widget>
