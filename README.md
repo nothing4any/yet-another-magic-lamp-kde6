@@ -60,3 +60,14 @@ enable it, and click Apply.
 
 > **Note:** This effect belongs to the "minimize" exclusive group. If the
 > built-in "Magic Lamp" effect is enabled, disable it first.
+
+## 旧插件删除
+注意：删除前先查看是否存在
+~~~
+rm -rf /usr/share/kwin/effects/yetanothermagiclamp/
+~~~
+
+
+|修复记录|时间|原因|处理办法
+|---|---|---|---|
+|1|20260810|kwin6.7.3 升级到了 6.7.4|删除旧插件，下载最新版本构建安装
