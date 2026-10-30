@@ -9,6 +9,8 @@ is minimized, it gets sucked down into the dock/panel with a curvy animation.
 Compared to the built-in Magic Lamp effect, this one has smoother curves,
 better multi-screen panel handling, and more configuration options.
 
+**Please note that KWin requires recompilation following each system update.**
+
 ## Tested Platforms
 
 This port targets **KWin 6 (Plasma 6)** and has been tested only on:
