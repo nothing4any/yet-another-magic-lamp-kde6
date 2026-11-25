@@ -10,6 +10,10 @@ kconfig_add_kcfg_files(effect_SRCS
     YetAnotherMagicLampConfig.kcfgc
 )
 
+# Tell CMake's AUTOMOC about the KWin effect factory macro, otherwise
+# plugin.cc triggers a "does not contain a Q_OBJECT" warning.
+list(APPEND CMAKE_AUTOMOC_MACRO_NAMES "KWIN_EFFECT_FACTORY_SUPPORTED_ENABLED")
+
 add_library(kwin4_effect_yetanothermagiclamp SHARED ${effect_SRCS})
 
 target_link_libraries(kwin4_effect_yetanothermagiclamp
